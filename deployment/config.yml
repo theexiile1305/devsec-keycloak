@@ -1,0 +1,14 @@
+http:
+  routers:
+    dashboard:
+      rule: Host(`dashboard.devsec-keycloak.mfuchs.dev`)
+      service: api@internal
+      middlewares: auth
+      entrypoints: websecure
+      tls:
+        certresolver: tlsresolver
+  
+  middlewares:
+    auth:
+      basicauth:
+        users: admin:$2y$10$mqsjKLThlluJY.N1kn5txuYvSZ5oFDlFnRnYE6HRb/d9JCozvew2O

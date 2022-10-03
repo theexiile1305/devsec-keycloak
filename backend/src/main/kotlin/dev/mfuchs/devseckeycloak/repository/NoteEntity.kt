@@ -28,8 +28,5 @@ data class NoteEntity(
     val uuid: UUID,
 
     @Column(nullable = false)
-    val title: String,
-
-    @Column(nullable = false)
-    val description: String
+    val text: String
 )

@@ -22,7 +22,7 @@ class NoteService(
 
     @Transactional
     fun updateNote(noteUuid: UUID, note: Note): Note? = noteRepository.findByUuid(noteUuid)?.let {
-        toNote(noteRepository.save(it.copy(title = note.title, description = note.description)))
+        toNote(noteRepository.save(it.copy(text = note.text)))
     }
 
     @Transactional

@@ -164,4 +164,16 @@ Temporary Items
 # Ignore code-workspaces
 *.code-workspace
 
+backend/build/
+backend/.gradle
+
+keycloak/build/
+keycloak/.gradle
+
+frontend/node_modules/
+frontend/build/
+
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+
 # End of https://www.toptal.com/developers/gitignore/api/macos,linux,intellij+all,visualstudiocode

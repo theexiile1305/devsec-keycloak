@@ -11,18 +11,14 @@ data class ApiNoteResponse(
     val uuid: UUID,
 
     @Schema(required = true, example = "Some Title")
-    val title: String,
-
-    @Schema(required = true, example = "Some Description")
-    val description: String
+    val text: String
 ) {
     companion object {
         fun toApiNote(
             note: Note
         ): ApiNoteResponse = ApiNoteResponse(
             uuid = note.uuid,
-            title = note.title,
-            description = note.description
+            text = note.text
         )
     }
 }

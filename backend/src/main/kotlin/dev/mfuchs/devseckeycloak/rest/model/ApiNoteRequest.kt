@@ -7,19 +7,15 @@ import java.util.UUID
 @Schema(title = "NoteRequest")
 data class ApiNoteRequest(
 
-    @Schema(required = true, example = "Some Title")
-    val title: String,
-
-    @Schema(required = true, example = "Some Description")
-    val description: String
+    @Schema(required = true, example = "Some Text")
+    val text: String
 ) {
     companion object {
         fun toNote(
             apiNote: ApiNoteRequest
         ): Note = Note(
             uuid = UUID.randomUUID(),
-            title = apiNote.title,
-            description = apiNote.description
+            text = apiNote.text
         )
     }
 }

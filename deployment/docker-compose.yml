@@ -1,0 +1,98 @@
+version: '3.7'
+services:
+  reverse-proxy:
+    image: docker.io/library/traefik:v2.9@sha256:ee687eca219bb09c9ff5f964875e5e6089d154659eb7e31e2554532c52e53ae0
+    container_name: reverse-proxy
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./letsencrypt:/etc/traefik/letsencrypt:rw
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./config.yml:/etc/traefik/config.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - devsec-keycloak-net
+
+  db-keycloak:
+    image: docker.io/library/postgres:14.5@sha256:db3825afa034c78d03e301c48c1e8ed581f70e4b1c0d9dd944e3639a9d4b8b75
+    container_name: db-keycloak
+    volumes:
+      - db-keycloak:/var/lib/postgresql/db-keycloak:rw
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password # enter password
+    networks:
+      - devsec-keycloak-net
+
+  db-backend:
+    image: docker.io/library/postgres:14.5@sha256:db3825afa034c78d03e301c48c1e8ed581f70e4b1c0d9dd944e3639a9d4b8b75
+    container_name: db-backend
+    volumes:
+      - db-backend:/var/lib/postgresql/db-backend:rw
+    environment:
+      POSTGRES_DB: backend
+      POSTGRES_USER: backend
+      POSTGRES_PASSWORD: password # enter password
+    networks:
+      - devsec-keycloak-net
+
+  keycloak:
+    image: ghcr.io/theexiile1305/devsec-keycloak-keycloak:latest@sha256:bfdc090c2a3e0f95dcb297bdd60bebf7dbcd975a0141ec9686a6e0115051b388
+    container_name: keycloak
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.keycloak.entrypoints=websecure
+      - traefik.http.routers.keycloak.rule=Host(`keycloak.devsec-keycloak.mfuchs.dev`)
+      - traefik.http.routers.keycloak.tls.certresolver=tlsresolver
+    environment:
+      - KC_HTTP_ENABLED=false
+      - KC_DB_URL_HOST=db-keycloak
+      - KC_DB_SCHEMA=public
+      - KC_DB_USERNAME=keycloak
+      - KC_DB_PASSWORD=password # enter password
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=password # enter password
+      - KC_HTTP_RELATIVE_PATH=/auth
+      - KC_HOSTNAME_PATH=/auth
+      - KC_HOSTNAME_STRICT=false
+      - KC_PROXY=edge
+    networks:
+      - devsec-keycloak-net
+    depends_on:
+      - db-keycloak
+
+  backend:
+    image: ghcr.io/theexiile1305/devsec-keycloak-backend:latest@sha256:58816580c1ef5f7b108c0964d3ad731b6d627dcbd8b52403763c5e28f4e6a732
+    container_name: backend
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.backend.entrypoints=websecure
+      - traefik.http.routers.backend.rule=Host(`backend.devsec-keycloak.mfuchs.dev`)
+      - traefik.http.routers.backend.tls.certresolver=tlsresolver
+      - traefik.http.services.backend.loadbalancer.server.port=8080
+    networks:
+      - devsec-keycloak-net
+
+  frontend:
+    image: ghcr.io/theexiile1305/devsec-keycloak-frontend:latest@sha256:109183d8528b72d21b7cb759aa53ade46b98f2ae3bfccd727bf538823ad75130
+    container_name: frontend
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.frontend.entrypoints=websecure
+      - traefik.http.routers.frontend.rule=Host(`frontend.devsec-keycloak.mfuchs.dev`)
+      - traefik.http.routers.frontend.tls.certresolver=tlsresolver
+      - traefik.http.services.frontend.loadbalancer.server.port=80
+    networks:
+      - devsec-keycloak-net
+
+volumes:
+  db-keycloak:
+    driver: local
+  db-backend:
+    driver: local
+
+networks:
+  devsec-keycloak-net:
+    name: devsec-keycloak-network
