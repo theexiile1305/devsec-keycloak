@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/backend
+    username: backend
+    password: password
+  security:
+    oauth2:
+      resource-server:
+        jwt:
+          issuer-uri: https://keycloak.devsec-keycloak.mfuchs.dev/auth/realms/keycloak-demo
+
+web:
+  cors:
+    allowedOrigins:
+      - https://frontend.devsec-keycloak.mfuchs.dev
+      - http://localhost:3000
+
+springdoc:
+  swagger-ui:
+    oauth:
+      client-id: swagger-ui
+      realm: keycloak-demo
+swagger:
+  token-request-endpoint: https://keycloak.devsec-keycloak.mfuchs.dev/auth/realms/keycloak-demo/protocol/openid-connect/auth
+  token-endpoint: https://keycloak.devsec-keycloak.mfuchs.dev/auth/realms/keycloak-demo/protocol/openid-connect/token
