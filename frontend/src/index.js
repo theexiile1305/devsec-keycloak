@@ -19,7 +19,7 @@ keycloak
 
         ReactDOM
             .createRoot(document.getElementById('root'))
-            .render(<React.StrictMode><App></App></React.StrictMode>)
+            .render(<React.StrictMode><App keycloak={keycloak}></App></React.StrictMode>)
 
         localStorage.setItem("react-token", keycloak.token);
         localStorage.setItem("react-refresh-token", keycloak.refreshToken);
