@@ -32,6 +32,11 @@ h1 {
   font-size: 24px;
 }
 
+p {
+  color: #fff;
+  font-size: 18px;
+}
+
 .complete {
   text-decoration: line-through;
   opacity: 0.4;
@@ -68,6 +73,15 @@ h1 {
   );
   color: #fff;
   text-transform: capitalize;
+}
+
+.note-button.logout {
+  background: linear-gradient(
+          90deg,
+          rgb(255, 12, 215) 0%,
+          rgb(255, 12, 40) 100%
+  );
+
 }
 
 .note-input.edit {
